@@ -102,8 +102,62 @@ public static int[] kosaraju(Input.Slides s) {
      * [0] flow stages: the number of zones on the longest chain of zones;
      * [1] the cost of the cheapest route from the zone of cell 0 to the zone of the last cell.
      */
-    public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
-        // TODO
-        return new long[]{0, 0};
+
+public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
+    int[] from = s.from();
+    int[] to = s.to();
+    int[] time = s.time();
+
+    long[][] cost = new long[zoneCount][zoneCount];
+
+    for (int i = 0; i < zoneCount; i++) {
+        java.util.Arrays.fill(cost[i], Long.MAX_VALUE);
     }
+
+    for (int i = 0; i < from.length; i++) {
+        int a = zoneOf[from[i]];
+        int b = zoneOf[to[i]];
+
+        if (a != b && time[i] < cost[a][b]) {
+            cost[a][b] = time[i];
+        }
+    }
+
+    int[] stages = new int[zoneCount];
+    long[] distance = new long[zoneCount];
+
+    java.util.Arrays.fill(distance, Long.MAX_VALUE);
+
+    int start = zoneOf[0];
+    int exit = zoneOf[zoneOf.length - 1];
+
+    stages[start] = 1;
+    distance[start] = 0;
+
+    for (int a = 0; a < zoneCount; a++) {
+        for (int b = a + 1; b < zoneCount; b++) {
+            if (cost[a][b] == Long.MAX_VALUE) {
+                continue;
+            }
+
+            if (stages[a] > 0) {
+                stages[b] = Math.max(stages[b], stages[a] + 1);
+            }
+
+            if (distance[a] != Long.MAX_VALUE) {
+                distance[b] = Math.min(
+                    distance[b], distance[a] + cost[a][b]
+                );
+            }
+        }
+    }
+
+    int maxStages = 0;
+    for (int value : stages) {
+        maxStages = Math.max(maxStages, value);
+    }
+
+    return new long[]{maxStages, distance[exit]};
+}
+
 }
