@@ -24,7 +24,51 @@ public class DisjointSetTest {
         check(d.count() == 3, "3 sets: {0,1,2,3} {4} {5}");
         check(d.find(4) == 4 && d.find(5) == 5, "a single cell is its own root");
 
-        // TODO: add your own checks here
+                DisjointSet self = new DisjointSet(5);
+
+        check(!self.union(2, 2), "union with itself returns false");
+        check(self.count() == 5, "count unchanged after union with itself");
+        check(self.connected(2, 2), "element is connected to itself");
+
+        int size = 1000;
+        DisjointSet chain = new DisjointSet(size);
+
+        for (int i = 0; i < size - 1; i++) {
+            chain.union(i, i + 1);
+        }
+
+        check(chain.count() == 1, "1000 elements form one set");
+        check(chain.connected(0, size - 1), "first and last elements are connected");
+        check(!chain.union(0, size - 1), "repeated union returns false");
+        check(chain.count() == 1, "count stays 1 after repeated union");
+
+        DisjointSet groups = new DisjointSet(100);
+
+        for (int i = 0; i < 50; i++) {
+            groups.union(i, i + 1);
+        }
+
+        check(groups.count() == 50, "count is correct after 50 unions");
+        check(groups.connected(0, 50), "elements 0 to 50 are connected");
+        check(!groups.connected(0, 51), "element 51 remains separate");
+
+        boolean invalidFind = false;
+        try {
+            groups.find(-1);
+        } catch (IndexOutOfBoundsException e) {
+            invalidFind = true;
+        }
+
+        check(invalidFind, "find(-1) throws an exception");
+
+        boolean invalidUnion = false;
+        try {
+            groups.union(0, 100);
+        } catch (IndexOutOfBoundsException e) {
+            invalidUnion = true;
+        }
+
+        check(invalidUnion, "union with an invalid index throws an exception");
 
         System.out.println(failed == 0 ? "All checks passed." : failed + " checks failed.");
     }
