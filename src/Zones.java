@@ -18,10 +18,83 @@ public class Zones {
      * slides (slidesInto) and give every cell it reaches the next zone number.
      * Is DAG in Main is 1 when the number of zones equals the number of cells (no cycle), so you do not need a separate check.
      */
-    public static int[] kosaraju(Input.Slides s) {
-        // TODO
-        return new int[s.n()];
+
+public static int[] kosaraju(Input.Slides s) {
+    int n = s.n();
+    int[][] from = Graphs.slidesFrom(s);
+    int[][] into = Graphs.slidesInto(s);
+
+    boolean[] visited = new boolean[n];
+    int[] order = new int[n];
+    int orderSize = 0;
+    int[] stack = new int[n];
+    int[] nextIndex = new int[n];
+
+    for (int start = 0; start < n; start++) {
+        if (visited[start]) {
+            continue;
+        }
+
+        int top = 0;
+        stack[top] = start;
+        nextIndex[top] = 0;
+        top++;
+        visited[start] = true;
+
+        while (top > 0) {
+            int cell = stack[top - 1];
+
+            if (nextIndex[top - 1] < from[cell].length) {
+                int slide = from[cell][nextIndex[top - 1]++];
+                int next = s.to()[slide];
+
+                if (!visited[next]) {
+                    visited[next] = true;
+                    stack[top] = next;
+                    nextIndex[top] = 0;
+                    top++;
+                }
+            } else {
+                order[orderSize++] = cell;
+                top--;
+            }
+        }
     }
+
+    int[] zoneOf = new int[n];
+    java.util.Arrays.fill(zoneOf, -1);
+    int zone = 0;
+
+    for (int i = orderSize - 1; i >= 0; i--) {
+        int start = order[i];
+
+        if (zoneOf[start] != -1) {
+            continue;
+        }
+
+        int top = 0;
+        stack[top++] = start;
+        zoneOf[start] = zone;
+
+        while (top > 0) {
+            int cell = stack[--top];
+
+            for (int slide : into[cell]) {
+                int next = s.from()[slide];
+
+                if (zoneOf[next] == -1) {
+                    zoneOf[next] = zone;
+                    stack[top++] = next;
+                }
+            }
+        }
+
+        zone++;
+    }
+
+    return zoneOf;
+}
+
 
     /**
      * Mission 5. The graph of zones: the edge X to Y costs the cheapest slide from X to Y, walking inside a zone is free.
