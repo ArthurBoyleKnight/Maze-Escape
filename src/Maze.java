@@ -9,10 +9,28 @@ public class Maze {
      * Mission 1. Take the walls in the order of the file. Break a wall when its two cells are in different sets.
      * Returns the indexes of the broken walls, in the order of breaking.
      */
-    public static int[] breakWalls(Input.Walls w) {
-        // TODO
-        return new int[0];
+public static int[] breakWalls(Input.Walls w) {
+    int[] a = w.a();
+    int[] b = w.b();
+
+    int cells = 0;
+    for (int i = 0; i < a.length; i++) {
+        cells = Math.max(cells, Math.max(a[i], b[i]) + 1);
     }
+
+    DisjointSet ds = new DisjointSet(cells);
+    int[] broken = new int[a.length];
+    int count = 0;
+
+    for (int i = 0; i < a.length; i++) {
+        if (ds.union(a[i], b[i])) {
+            broken[count] = i;
+            count++;
+        }
+    }
+
+    return java.util.Arrays.copyOf(broken, count);
+}
 
     /**
      * Mission 2. Kruskal: the same, but take the walls from the cheapest to the most expensive.
