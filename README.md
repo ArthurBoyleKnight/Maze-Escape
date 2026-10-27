@@ -57,7 +57,7 @@ The zones are numbered in topological order, so every slide between different zo
 
 ## AI use
 
-I used ChatGPT to understand the assignment requirements, explain the algorithms, help implement and review parts of the Java code, and understand test results and errors. I used the provided `java tools/Check.java` command to check the implementation.
+I used ChatGPT to understand the assignment requirements, explain the algorithms and review parts of the Java code. I used the provided `java tools/Check.java` command to check the implementation.
 
 ## Timing (Mission 7)
 
